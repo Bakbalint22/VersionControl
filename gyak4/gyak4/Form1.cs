@@ -20,7 +20,18 @@ namespace gyak4
         Excel.Application xlApp;
         Excel.Workbook xlWB;
         Excel.Worksheet xlSheet;
-        
+
+        string[] headers = new string[] {
+            "Kód",
+            "Eladó",
+            "Oldal",
+            "Kerület",
+            "Lift",
+            "Szobák száma",
+            "Alapterület (m2)",
+            "Ár (mFt)",
+            "Négyzetméter ár (Ft/m2)"};
+
         public Form1()
         {
             InitializeComponent();
@@ -31,9 +42,34 @@ namespace gyak4
 
             CreateTable();
 
+            FormatTable();
             
 
 
+        }
+
+        void FormatTable()
+        {
+            Excel.Range headerRange = xlSheet.get_Range(GetCell(1, 1), GetCell(1, headers.Length));
+            headerRange.Font.Bold = true;
+            headerRange.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
+            headerRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            headerRange.EntireColumn.AutoFit();
+            headerRange.RowHeight = 40;
+            headerRange.Interior.Color = Color.LightBlue;
+            headerRange.BorderAround2(Excel.XlLineStyle.xlContinuous, Excel.XlBorderWeight.xlThick);
+
+            int lastRowID = xlSheet.UsedRange.Rows.Count;
+
+            Excel.Range flatRange = xlSheet.get_Range(GetCell(2, 1), GetCell(lastRowID, 9));
+            flatRange.BorderAround2(Excel.XlLineStyle.xlContinuous, Excel.XlBorderWeight.xlThick);
+
+            Excel.Range firstRange = xlSheet.get_Range(GetCell(2, 1), GetCell(lastRowID, 1));
+            firstRange.Interior.Color = Color.LightYellow;
+
+            Excel.Range lastRange = xlSheet.get_Range(GetCell(2, 9), GetCell(lastRowID, 9));
+            lastRange.Interior.Color = Color.LightGreen;
+            lastRange.NumberFormat = "#,##0.00";
         }
 
         private static string GetCell(int x, int y)
@@ -55,16 +91,7 @@ namespace gyak4
 
         void CreateTable()
         {
-            string[] headers = new string[] {
-            "Kód",
-            "Eladó",
-            "Oldal",
-            "Kerület",
-            "Lift",
-            "Szobák száma",
-            "Alapterület (m2)",
-            "Ár (mFt)",
-            "Négyzetméter ár (Ft/m2)"};
+            
 
             
 
@@ -86,7 +113,9 @@ namespace gyak4
                 values[counter, 5] = f.NumberOfRooms;
                 values[counter, 6] = f.FloorArea;
                 values[counter, 7] = f.Price;
-                values[counter, 8] = "";
+                var divider = GetCell(counter + 2, 7);
+                var dividend = GetCell(counter + 2, 8);
+                values[counter, 8] = $"={dividend}/{divider}";
                 counter++;
             }
             xlSheet.get_Range(
