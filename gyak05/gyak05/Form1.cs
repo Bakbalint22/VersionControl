@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +43,11 @@ namespace gyak05
                                       select x)
                                         .ToList();
             MessageBox.Show(nyereségekRendezve[nyereségekRendezve.Count() / 5].ToString());
+
+           
         }
+
+     
 
         private void CreatePortfolio()
         {
@@ -66,9 +71,34 @@ namespace gyak05
                 value += (decimal)last.Price * item.Volume;
             }
             return value;
+
+
+
         }
 
-        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+
+            using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+            {
+                sw.Write("Időszak");
+                sw.Write(";");
+                sw.Write("Nyereség");
+                sw.Write(";");
+                foreach (var s in context.Ticks)
+                {
+                    
+                    
+                    sw.Write(s.Index);
+                    sw.Write(";");
+                    sw.Write(s.Price);
+                    sw.WriteLine();
+                }
+            }
+        }
     }
     
 }
