@@ -15,12 +15,15 @@ namespace gyak10
     {
         GameController gc = new GameController();
         GameArea ga;
+        
 
         public Form1()
         {
             InitializeComponent();
             ga = gc.ActivateDisplay();
             this.Controls.Add(ga);
+            gc.AddPlayer();
+            gc.Start(true);
         }
     }
 }
